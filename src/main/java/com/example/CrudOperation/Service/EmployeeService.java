@@ -26,13 +26,16 @@ public class EmployeeService {
         return employeeRepo.findAll();
     }
 
-    public boolean updateAddress(UpdateAddressDto updateAddressDto){
-
-        Employee Existing = employeeRepo.findByName(updateAddressDto.getName()).orElseThrow(()-> new RuntimeException("vefs"));
-
-        Existing.setAddress(updateAddressDto.getAddress());
-        return Existing;
+    public boolean updateAddress(UpdateAddressDto updateAddressDto) {
+        return employeeRepo.findByName(updateAddressDto.getName())
+                .map(employee -> {
+                    employee.setAddress(updateAddressDto.getAddress());
+                    employeeRepo.save(employee);
+                    return true;
+                })
+                .orElse(false);
     }
+
     public Boolean deleteEmployee(String name) {
         Optional<Employee> employee = employeeRepo.findByName(name);
         if(employee.isPresent()){
